@@ -12,7 +12,7 @@
 // ============================================================================
 package org.talend.dataquality.datamasking.functions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.URISyntaxException;
 import java.util.Random;
@@ -47,6 +47,13 @@ public class MaskAddressTest {
         String input = "5 rue de l'oise"; //$NON-NLS-1$
         output = ma.generateMaskedRow(input);
         assertEquals("6 rue XX XXXXXX", output); //$NON-NLS-1$
+    }
+
+    @Test
+    public void testGood2() {
+        String input = "5 Golden State Freeway"; //$NON-NLS-1$
+        output = ma.generateMaskedRow(input);
+        assertEquals("6 XXXXXX XXXXX Freeway", output); //$NON-NLS-1$
     }
 
     @Test

@@ -12,34 +12,31 @@
 // ============================================================================
 package org.talend.dataquality.datamasking.functions;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
- * created by jgonzalez on 19 juin 2015. This function will replace digits by other digits and everithing else by ”x”.
- * Moreover, there is a list of key words that won’t be transformed.
+ * created by jgonzalez on 19 juin 2015. This function will replace digits by other digits and everything else by ”X”.
+ * Moreover, there is a list of keywords that won’t be transformed.
  *
  */
 public class MaskAddress extends Function<String> {
 
     private static final long serialVersionUID = -4661073390672757141L;
 
-    private List<String> keys = new ArrayList<>(Arrays.asList("Rue", "rue", "r.", "strasse", "Strasse", "Street", "street", "St.", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-            "St", "Straße", "Strada", "Rua", "Calle", "Ave.", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-            "avenue", "Av.", "Allee", "allee", "allée", "Avenue", "Avenida", "Bvd.", "Bd.", "Boulevard", "boulevard", "Blv.", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
-            "Viale", //$NON-NLS-1$
-            "Avenida", "Bulevar", "Route", "route", "road", "Road", "Rd.", "Chemin", "Way", "Cour", "Court", "Ct.", "Place", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$ //$NON-NLS-13$
-            "place", "Pl.", //$NON-NLS-1$ //$NON-NLS-2$
-            "Square", "Impasse", "Allée", "Driveway", "Auffahrt", "Viale", "Esplanade", "Esplanade", "Promenade", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
-            "Lungomare", "Esplanada", "Esplanada", "Faubourg", "faubourg", "Suburb", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
-            "Vorort", "Periferia", "Subúrbio", "Suburbio", "Via", "Via", "industrial", "area", "zone", "industrielle", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
-            "Périphérique", "Peripheral", "Voie", "voie", "Track", "Gleis", "Carreggiata", "Caminho", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
-            "Pista", "Forum", "STREET", "RUE", "ST.", "AVENUE", "BOULEVARD", "BLV.", "BD", "ROAD", "ROUTE", "RD.", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
-            "RTE", "WAY", "CHEMIN", "COURT", "CT.", "SQUARE", "DRIVEWAY", "ALLEE", "DR.", "ESPLANADE", "SUBURB", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$
-            "BANLIEUE", "VIA", "PERIPHERAL", "PERIPHERIQUE", "TRACK", "VOIE", "FORUM", "INDUSTRIAL", "AREA", "ZONE", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$
-            "INDUSTRIELLE")); //$NON-NLS-1$
+    private Set<String> keys = new HashSet<>(Arrays.asList("ALLEE", "ALLEY", "ALLÉE", "AREA", "AUFFAHRT", "AV", "AV.", "AVDA",
+            "AVE", "AVE.", "AVENIDA", "AVENUE", "BACKROAD", "BANLIEUE", "BD", "BD.", "BLV", "BLV.", "BLVD", "BOULEVARD", "BREVE",
+            "BULEVAR", "BVD", "BVD.", "BYWAY", "CALLE", "CAMINHO", "CAMINO", "CARREFOUR", "CARREGGIATA", "CARRETERA", "CHAUSSEE",
+            "CHAUSSÉE", "CHEMIN", "CITE", "CITÉ", "CORTO", "COUR", "COURT", "CRT", "CT", "CT.", "CURTO", "DR", "DR.", "DRIVE",
+            "DRIVEWAY", "ESD", "ESPLANADA", "ESPLANADE", "ESTRADA", "FAUBOURG", "FORUM", "FREEWAY", "GLEIS", "HIGHWAY", "HWY",
+            "IMPASSE", "INDUSTRIAL", "INDUSTRIALE", "INDUSTRIELLE", "KURZ", "LANE", "LUNGOMARE", "MANEIRA", "MODO", "PARKWAY",
+            "PARVIS", "PASSAGE", "PASSERELLE", "PERIFERIA", "PERIFERICO", "PERIFÉRICO", "PERIPHERAL", "PERIPHERIQUE", "PIAZZA",
+            "PISTA", "PL", "PL.", "PLACE", "PLATZ", "PLAZA", "PONT", "PORTE", "PROMENADE", "PERIPHERIQUE", "PÉRIPHÉRIQUE",
+            "QUADRADO", "QUAI", "R", "R.", "RD", "RD.", "ROAD", "ROUTE", "RTE", "RUA", "RUE", "SQUARE", "ST", "ST.", "STD", "STR",
+            "STRADA", "STRASSE", "STREET", "SUBURB", "SUBURBIO", "SUBÚRBIO", "TERRASSE", "TRACK", "UBER", "VIA", "VIALE", "VILLA",
+            "VLE", "VOIE", "VORORT", "VÍA", "WAY", "WEG", "ZONA", "ZONE", "ÁREA", "ÜBER"));
 
     @Override
     protected String doGenerateMaskedField(String str) {
@@ -47,7 +44,7 @@ public class MaskAddress extends Function<String> {
         if (str != null && !EMPTY_STRING.equals(str) && !(" ").equals(str)) { //$NON-NLS-1$
             String[] address = str.split(",| "); //$NON-NLS-1$
             for (String tmp : address) {
-                if (keys.contains(tmp)) {
+                if (keys.contains(tmp.toUpperCase())) {
                     sb.append(tmp + " "); //$NON-NLS-1$
                 } else {
                     int cp = 0;
@@ -74,7 +71,7 @@ public class MaskAddress extends Function<String> {
     public void parse(String extraParameter, boolean keepNullValues, Random rand) {
         super.parse(extraParameter, keepNullValues, rand);
         for (String element : parameters) {
-            keys.add(element);
+            keys.add(element.toUpperCase());
         }
     }
 
