@@ -145,10 +145,10 @@ public class ValueDataMaskerTest extends CategoryRegistryManagerAbstract {
 
         {
             // custom dictionary
-            put(new String[] { "true", SemanticCategoryEnum.ANSWER.name(), "string" }, "true");
-            put(new String[] { "false", SemanticCategoryEnum.ANSWER.name(), "string" }, "true");
-            put(new String[] { "TRUE", SemanticCategoryEnum.ANSWER.name(), "string" }, "VKFZ");
-            put(new String[] { "FALSE", SemanticCategoryEnum.ANSWER.name(), "string" }, "VKFZZ");
+            put(new String[] { "true", "NEW_CAT_NAME", "string" }, "false");
+            put(new String[] { "false", "NEW_CAT_NAME", "string" }, "false");
+            put(new String[] { "TRUE", "NEW_CAT_NAME", "string" }, "VKFZ");
+            put(new String[] { "FALSE", "NEW_CAT_NAME", "string" }, "VKFZZ");
         }
     };
 
@@ -186,8 +186,8 @@ public class ValueDataMaskerTest extends CategoryRegistryManagerAbstract {
      * @throws InstantiationException
      */
     @Test
-    public void testProcessModifyExistCategory() throws InstantiationException, IllegalAccessException {
-        String mockedTenantID = this.getClass().getSimpleName() + "_ModifiedIndex";
+    public void testProcessCustomCategory() throws InstantiationException, IllegalAccessException {
+        String mockedTenantID = this.getClass().getSimpleName() + "_CustomIndex";
         MockitoAnnotations.initMocks(this);
         mockWithTenant(mockedTenantID);
         CategoryRegistryManager.setUsingLocalCategoryRegistry(true);
@@ -197,6 +197,8 @@ public class ValueDataMaskerTest extends CategoryRegistryManagerAbstract {
         DQCategory answerCategory = holder.getMetadata().get(SemanticCategoryEnum.ANSWER.getTechnicalId());
         DQCategory categoryClone = SerializationUtils.clone(answerCategory); // make a clone instead of modifying the shared
                                                                              // category metadata
+        categoryClone.setId("NEW_CAT_ID");
+        categoryClone.setName("NEW_CAT_NAME");
         categoryClone.setModified(true);
         holder.updateCategory(categoryClone);
 

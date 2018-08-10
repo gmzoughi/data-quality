@@ -52,17 +52,40 @@ public class ValueDataMasker implements Serializable {
     }
 
     /**
+     *
      * ValueDataMasker constructor.
-     * 
+     *
      * @param semanticCategory the semantic domain information
      * @param dataType the data type information
      * @param params extra parameters such as date time pattern list
      */
     public ValueDataMasker(String semanticCategory, String dataType, List<String> params) {
-        function = SemanticMaskerFunctionFactory.createMaskerFunctionForSemanticCategory(semanticCategory, dataType, params);
-        category = CategoryRegistryManager.getInstance().getCategoryMetadataByName(semanticCategory);
-        if (category != null && CategoryType.DICT.equals(category.getType())) {
-            DictionarySnapshot dictionarySnapshot = new StandardDictionarySnapshotProvider().get();
+        this(semanticCategory, dataType, params, null);
+
+    }
+
+    /**
+     *
+     * ValueDataMasker constructor.
+     *
+     * @param semanticCategory the semantic domain information
+     * @param dataType the data type information
+     * @param params extra parameters such as date time pattern list
+     * @param dictionarySnapshot the dictionary snapshot
+     */
+    public ValueDataMasker(String semanticCategory, String dataType, List<String> params, DictionarySnapshot dictionarySnapshot) {
+        final Function<String> maskerFunction = SemanticMaskerFunctionFactory
+                .createMaskerFunctionForSemanticCategory(semanticCategory, dataType, params);
+        this.function = maskerFunction;
+
+        if (maskerFunction instanceof GenerateFromDictionaries) {
+            category = CategoryRegistryManager.getInstance().getCategoryMetadataByName(semanticCategory);
+            if (category != null && CategoryType.DICT.equals(category.getType())) {
+                if (dictionarySnapshot == null) {
+                    dictionarySnapshot = new StandardDictionarySnapshotProvider().get();
+                }
+            }
+            ((GenerateFromDictionaries) function).setDictionarySnapshot(dictionarySnapshot);
             semanticQualityAnalyzer = new SemanticQualityAnalyzer(dictionarySnapshot, new String[] {});
         }
     }
