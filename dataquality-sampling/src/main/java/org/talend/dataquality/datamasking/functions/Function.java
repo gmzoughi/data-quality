@@ -30,15 +30,19 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class Function<T> implements Serializable {
 
-    private static final long serialVersionUID = 6333987486134315822L;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
-
-    protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
-
     public static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //$NON-NLS-1$
 
     public static final String LOWER = "abcdefghijklmnopqrstuvwxyz"; //$NON-NLS-1$
+
+    protected static final String EMPTY_STRING = ""; //$NON-NLS-1$
+
+    protected static final Pattern patternSpace = Pattern.compile("\\s+");
+
+    protected static final Pattern nonDigits = Pattern.compile("\\D+");
+
+    private static final long serialVersionUID = 6333987486134315822L;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Function.class);
 
     protected Random rnd = new Random();
 
@@ -52,9 +56,14 @@ public abstract class Function<T> implements Serializable {
 
     protected boolean keepFormat = false;
 
-    protected static final Pattern patternSpace = Pattern.compile("\\s+");
-
-    protected static final Pattern nonDigits = Pattern.compile("\\D+");
+    /**
+     * getter for random
+     *
+     * @return the random object
+     */
+    public Random getRandom() {
+        return rnd;
+    }
 
     /**
      * setter for random
@@ -68,15 +77,6 @@ public abstract class Function<T> implements Serializable {
         } else {
             rnd = rand;
         }
-    }
-
-    /**
-     * getter for random
-     *
-     * @return the random object
-     */
-    public Random getRandom() {
-        return rnd;
     }
 
     /**
@@ -118,19 +118,17 @@ public abstract class Function<T> implements Serializable {
         if (extraParameter != null) {
             parameters = clean(extraParameter).split(","); //$NON-NLS-1$
             if (parameters.length == 1 && isNeedCheckPath()) { // check if it's a path to a readable file
-                try {
-                    List<String> aux = KeysLoader.loadKeys(parameters[0].trim());
-                    parameters = aux.toArray(new String[aux.size()]);
-                } catch (IOException | NullPointerException e2) { // otherwise, we just get the parameter
-                    if (this.isBothValidForFileOrNot()) {
+                if (!this.isBothValidForFileOrNot() || !parameters[0].equals("")) { // For an empty param that is not mandatory, we do not want to return an error
+                    try {
+                        List<String> aux = KeysLoader.loadKeys(parameters[0].trim());
+                        parameters = aux.toArray(new String[aux.size()]);
+                    } catch (IOException | NullPointerException e2) { // otherwise, we just get the parameter
                         LOGGER.warn("The parameter is not a path to a file."); //$NON-NLS-1$
                         LOGGER.warn(e2.getMessage(), e2);
-                    } else {
-                        LOGGER.error("The parameter is not a path to a file."); //$NON-NLS-1$
-                        LOGGER.error(e2.getMessage(), e2);
-                        resetParameterTo(e2.getMessage().length() == 0 ? "Empty is not a path to a file." : e2.getMessage()); //$NON-NLS-1$
+                        if (!this.isBothValidForFileOrNot()) {
+                            resetParameterTo(e2.getMessage().length() == 0 ? "Empty is not a path to a file." : e2.getMessage()); //$NON-NLS-1$
+                        }
                     }
-
                 }
             }
             for (int i = 0; i < parameters.length; i++) {
