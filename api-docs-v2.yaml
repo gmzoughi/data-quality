@@ -1,0 +1,91 @@
+openapi: 3.0.0
+info:
+  title: Data Quality API v2
+  version: 2.0.0
+  description: Extended API for data quality operations with Qlik integration
+
+servers:
+  - url: https://api.dataquality.example.com/v2
+    description: Production server
+
+paths:
+  /datasets:
+    get:
+      summary: List datasets
+      description: Retrieve a list of available datasets
+      responses:
+        '200':
+          description: Successfully retrieved datasets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+    
+  /dataquality/analysis:
+    post:
+      summary: Analyze data quality
+      x-qlik-permissions:
+        - dataquality:update
+        - dataset:read
+      description: Perform data quality analysis on a dataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                datasetId:
+                  type: string
+                analysisType:
+                  type: string
+      responses:
+        '200':
+          description: Analysis completed successfully
+        '403':
+          description: Insufficient permissions
+  
+  /dataquality/validate:
+    post:
+      summary: Validate data
+      x-qlik-permissions:
+        - dataquality:update
+        - dataset:read
+      description: Validate data against quality rules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                datasetId:
+                  type: string
+                rules:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Validation completed successfully
+        '403':
+          description: Insufficient permissions
+
+components:
+  securitySchemes:
+    qlikAuth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://auth.qlik.example.com/oauth/authorize
+          tokenUrl: https://auth.qlik.example.com/oauth/token
+          scopes:
+            dataquality:update: Update data quality settings
+            dataset:read: Read dataset information
