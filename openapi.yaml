@@ -1,0 +1,16 @@
+openapi: 3.0.0
+info:
+  title: Data Quality API
+  version: 1.0.0
+  description: API for data quality operations
+
+paths:
+  /dataquality:
+    put:
+      summary: Update data quality
+      description: Update data quality settings
+      x-qlik-permissions:
+        - dataquality:update && dataset:read
+      responses:
+        '200':
+          description: Successfully updated
