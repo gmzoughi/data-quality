@@ -32,8 +32,7 @@ paths:
     post:
       summary: Analyze data quality
       x-qlik-permissions:
-        - dataquality:update
-        - dataset:read
+        - dataquality:update && dataset:read
       description: Perform data quality analysis on a dataset
       requestBody:
         required: true
@@ -56,8 +55,7 @@ paths:
     post:
       summary: Validate data
       x-qlik-permissions:
-        - dataquality:update
-        - dataset:read
+        - dataquality:update && dataset:read
       description: Validate data against quality rules
       requestBody:
         required: true
